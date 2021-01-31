@@ -9,6 +9,7 @@ let activeNote = {};
 
 // A function for getting all notes from the db
 const getNotes = () => {
+  console.log('path hit')
   return $.ajax({
     url: "/api/notes",
     method: "GET",
@@ -148,4 +149,5 @@ $noteTitle.on("keyup", handleRenderSaveBtn);
 $noteText.on("keyup", handleRenderSaveBtn);
 
 // Gets and renders the initial list of notes
+
 getAndRenderNotes();
