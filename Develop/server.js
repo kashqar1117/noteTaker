@@ -21,7 +21,7 @@ app.get('/notes',  (req, res) => {
   
     fs.readFile('./db/db.json', 'utf8', (err, data) =>{ 
     
-      res.json(data)
+      res.json(JSON.parse(data))
   });
   })
 
