@@ -2,6 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const path = require('path')
 const express = require('express')
+const { json } = require('express')
 const app = express()
 const PORT = 3000
 
@@ -21,27 +22,38 @@ app.get('/notes',  (req, res) => {
   
     fs.readFile('./db/db.json', 'utf8', (err, data) =>{ 
     
-      res.json(JSON.parse(data))
+      console.log(JSON.parse(data).id)
   });
   })
 
 
-  // app.get('/api/notes/:routename',  (req, res) => {
-  //   console.log(req.params)
-  //   res.end()
-  // })
+  //post 
 
-  // app.post('/api/notes/:routename',  (req, res) => {
+  //create a note
+  app.post('/api/notes' ,(req, res) =>
+  {
+
+    const newNote = req.body
+    
+    
+
+    fs.readFile('./db/db.json', 'utf8', (err, data) =>{
+   
+      const updatedData  = JSON.parse(data).concat(newNote)
+    
+      fs.writeFile('./db/db.json', JSON.stringify(updatedData), (err, data) =>
+      {
+          res.json({"name" : "true"})
+      })
+    })
+  })
+
+    // npm uuid (google)
+    //add and id , add a key to object
+    //use the id to be able to delete posts
+    //us id to be able to update posts 
 
 
-  //   res.send('hello world')
-  // })
-
-  // app.delete('/api/notes/:routename', (req, res) => {
-
-
-  //   res.send('hello world')
-  // })
 
   app.get('*',  (req, res) => {
     console.log("index.html2")
