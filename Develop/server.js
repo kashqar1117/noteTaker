@@ -4,7 +4,10 @@ const path = require('path')
 const express = require('express')
 const { json } = require('express')
 const app = express()
-const PORT = 3000
+const PORT = 3000;
+const { v4: uuidv4 } = require('uuid');
+
+
 
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -15,51 +18,92 @@ app.use(express.static("public"))
 
 
 
-app.get('/notes',  (req, res) => {
-    res.sendFile(path.join(__dirname, "./public/notes.html"));
-  })
-  app.get('/api/notes',  (req, res) => {
-  
-    fs.readFile('./db/db.json', 'utf8', (err, data) =>{ 
-    
-      console.log(JSON.parse(data).id)
-  });
-  })
+app.get('/notes', (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/notes.html"));
+})
+app.get('/api/notes', (req, res) => {
 
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+
+    res.json(JSON.parse(data))
+  });
+})
+
+
+
+
+//post a note
+
+
+app.post('/api/notes', (req, res) => {
+
+  const newNote = req.body
+  newNote.id = uuidv4();
+
+
+
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+
+    const updatedData = JSON.parse(data).concat(newNote)
+
+    fs.writeFile('./db/db.json', JSON.stringify(updatedData), (err, data) => {
+      res.json({ "name": "true" })
+    })
+  })
+})
+
+
+//delete route
 
   //post 
 
   //create a note
-  app.post('/api/notes' ,(req, res) =>
-  {
+  // app.post('/api/notes' ,(req, res) =>
+  // {
 
-    const newNote = req.body
+  //   const newNote = req.body
     
     
 
-    fs.readFile('./db/db.json', 'utf8', (err, data) =>{
+  //   fs.readFile('./db/db.json', 'utf8', (err, data) =>{
    
-      const updatedData  = JSON.parse(data).concat(newNote)
+  //     const updatedData  = JSON.parse(data).concat(newNote)
     
-      fs.writeFile('./db/db.json', JSON.stringify(updatedData), (err, data) =>
-      {
-          res.json({"name" : "true"})
-      })
+  //     fs.writeFile('./db/db.json', JSON.stringify(updatedData), (err, data) =>
+  //     {
+  //         res.json({"name" : "true"})
+  //     })
+  //   })
+  // })
+
+
+app.delete("/api/notes/:id", (req, res) => {
+  let removeId = req.params.id;
+
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+
+    const updatedData = JSON.parse(data)
+
+
+
+    const result = updatedData.filter(note => note.id != removeId);
+
+    JSON.stringify(result)
+
+
+    fs.writeFile('./db/db.json', JSON.stringify(result), (err, data) => {
+      res.json({ "name": "true" })
     })
   })
 
-    // npm uuid (google)
-    //add and id , add a key to object
-    //use the id to be able to delete posts
-    //us id to be able to update posts 
+
+})
 
 
-
-  app.get('*',  (req, res) => {
-    console.log("index.html2")
-    res.sendFile(path.join(__dirname, "./public/index.html"))
-  })
-  app.listen(PORT, function() {
-    console.log(`Server listening on http://localhost:${PORT}`)
-  });
-  
+app.get('*', (req, res) => {
+  console.log("index.html2")
+  res.sendFile(path.join(__dirname, "./public/index.html"))
+})
+app.listen(PORT, function () {
+  console.log(`Server listening on http://localhost:${PORT}`)
+});
