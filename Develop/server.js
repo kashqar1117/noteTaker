@@ -5,14 +5,6 @@ const express = require('express')
 const app = express()
 const PORT = 3000;
 const { v4: uuidv4 } = require('uuid');
- // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-
-
-
-
-
-
-
 
 
 
@@ -25,89 +17,70 @@ app.use(express.static("public"))
 
 
 
-app.get('/notes',  (req, res) => {
-    res.sendFile(path.join(__dirname, "./public/notes.html"));
-  })
-  app.get('/api/notes',  (req, res) => {
-  
-    fs.readFile('./db/db.json', 'utf8', (err, data) =>{ 
-    
-      res.json(JSON.parse(data))
+app.get('/notes', (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/notes.html"));
+})
+app.get('/api/notes', (req, res) => {
+
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+
+    res.json(JSON.parse(data))
   });
+})
+
+
+
+
+//post a note
+
+
+app.post('/api/notes', (req, res) => {
+
+  const newNote = req.body
+  newNote.id = uuidv4();
+
+
+
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+
+    const updatedData = JSON.parse(data).concat(newNote)
+
+    fs.writeFile('./db/db.json', JSON.stringify(updatedData), (err, data) => {
+      res.json({ "name": "true" })
+    })
   })
+})
+
+
+//delete route
+
+app.delete("/api/notes/:id", (req, res) => {
+  let removeId = req.params.id;
+
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+
+    const updatedData = JSON.parse(data)
 
 
 
+    const result = updatedData.filter(note => note.id != removeId);
 
-  //post a note
+    JSON.stringify(result)
 
 
-  app.post('/api/notes' ,(req, res) =>
-  {
-
-    const newNote = req.body
-    newNote.id = uuidv4();
-    
-    
-
-    fs.readFile('./db/db.json', 'utf8', (err, data) =>{
-   
-      const updatedData  = JSON.parse(data).concat(newNote)
-    
-      fs.writeFile('./db/db.json', JSON.stringify(updatedData), (err, data) =>
-      {
-          res.json({"name" : "true"})
-      })
+    fs.writeFile('./db/db.json', JSON.stringify(result), (err, data) => {
+      res.json({ "name": "true" })
     })
   })
 
 
-  //dete route
-     
-    app.delete("/api/notes/:id" , (req, res) =>
-    {   let removeId = req.params.id;
-
-      fs.readFile('./db/db.json', 'utf8', (err, data) =>{
-
-        const updatedData  = JSON.parse(data)
-
-  
-
-const result = updatedData.filter(note => note.id != removeId);
-
-            JSON.stringify(result)
+})
 
 
-      fs.writeFile('./db/db.json', JSON.stringify(result), (err, data) =>
-      {
-          res.json({"name" : "true"})
-      })
-      })
-
-
-    })
-
-  // app.get('/api/notes/:routename',  (req, res) => {
-  //   console.log(req.params)
-  //   res.end()
-  // })
-
-  // app.post('/api/notes/:routename',  (req, res) => {
-
-
-  //   res.send('hello world')
-  // })
-
-  // app.delete('/api/notes/:routename', (req, res) => {
-
-
-  //   res.send('hello world')
-  // })
-  app.get('*',  (req, res) => {
-    console.log("index.html2")
-    res.sendFile(path.join(__dirname, "./public/index.html"))
-  })
-  app.listen(PORT, function() {
-    console.log(`Server listening on http://localhost:${PORT}`)
-  });
-  
+app.get('*', (req, res) => {
+  console.log("index.html2")
+  res.sendFile(path.join(__dirname, "./public/index.html"))
+})
+app.listen(PORT, function () {
+  console.log(`Server listening on http://localhost:${PORT}`)
+});
