@@ -4,7 +4,7 @@ const path = require('path')
 const express = require('express')
 const { json } = require('express')
 const app = express()
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -52,29 +52,6 @@ app.post('/api/notes', (req, res) => {
   })
 })
 
-
-//delete route
-
-  //post 
-
-  //create a note
-  // app.post('/api/notes' ,(req, res) =>
-  // {
-
-  //   const newNote = req.body
-    
-    
-
-  //   fs.readFile('./db/db.json', 'utf8', (err, data) =>{
-   
-  //     const updatedData  = JSON.parse(data).concat(newNote)
-    
-  //     fs.writeFile('./db/db.json', JSON.stringify(updatedData), (err, data) =>
-  //     {
-  //         res.json({"name" : "true"})
-  //     })
-  //   })
-  // })
 
 
 app.delete("/api/notes/:id", (req, res) => {
